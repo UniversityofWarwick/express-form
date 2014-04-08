@@ -2,7 +2,7 @@
   "author": "Dan Dean <@dandean> (http://dandean.com)",
   "name": "express-form",
   "description": "Form validation and data filtering for Express",
-  "version": "0.12.0",
+  "version": "0.12.1",
   "homepage": "http://dandean.github.com/express-form",
   "repository": {
     "type": "git",
@@ -11,7 +11,8 @@
   "contributors": [
     "Marc Harter <wavded@gmail.com>",
     "Sugarstack <@sugarstack>",
-    "Sean Lavine <sean@eternalrise.com>"
+    "Sean Lavine <sean@eternalrise.com>",
+    "Nick Kaijaks <@nanoamp>"
   ],
   "keywords": [
     "form",
