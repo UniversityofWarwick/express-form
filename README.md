@@ -112,38 +112,45 @@ field("username")
 
 ####Type coercion
 ```js
-.toFloat()               // -> Number
+.toFloat()                 // -> Number
 
-.toInt()                 // -> Number, rounded down
+.toInt()                   // -> Number, rounded down
 
-.toBoolean()             // -> Boolean from truthy and falsy values
+.toBoolean()               // -> Boolean from truthy and falsy values
 
-.toBooleanStrict()       // -> Only true, "true", 1 and "1" are `true`
+.toBooleanStrict()         // -> Only true, "true", 1 and "1" are `true`
 
-.ifNull(replacement)     // -> "", undefined and null get replaced by `replacement`
+.ifNull(replacement)       // -> "", undefined and null get replaced by `replacement`
+
+.ifNullOrNaN(replacement)  // -> "", undefined, null, NaN get replaced by `replacement`
 ```
-See also [Array coercion/validation](#array-coercionvalidation) section below.
+
+If you intend to both validate and coerce numeric fields using `toInt()` or `toFloat()`, then you have two distinct approaches:
+* `.ifNull(0).toInt()` will ensure empty fields are zero, but non-numeric input will still return null, allowing you the option to validate with `.isInt()`.
+* `.toInt().ifNullOrNaN(0)` will ensure the field has a valid integral value whatever type is entered, defaulting to 0.
+
+For array coercion, see [Array coercion/validation](#array-coercionvalidation) below.
 
 ####HTML encoding for `& " < >`
 ```js
-.entityEncode()          // -> encodes HTML entities
+.entityEncode()            // -> encodes HTML entities
 
-.entityDecode()          // -> decodes HTML entities
+.entityDecode()            // -> decodes HTML entities
 ```
 
 ####String transformations
 ```js
-.trim(chars)             // -> `chars` defaults to whitespace
+.trim(chars)               // -> `chars` defaults to whitespace
 
 .ltrim(chars)
 
 .rtrim(chars)
 
-.toLower()               // alias: toLowerCase()
+.toLower()                 // alias: toLowerCase()
 
-.toUpper()               // alias: toUpperCase()
+.toUpper()                 // alias: toUpperCase()
 
-.truncate(length)        // -> Chops value at (length - 3), appends `...`
+.truncate(length)          // -> Chops value at (length - 3), appends `...`
 ```
 
 ### Validator API
@@ -173,37 +180,37 @@ field("uid", "Username").required("", "What is your %s?")
 
 Check that the field is present in form data, and has a value:
 ```js
-field("username").required([message])
+.required([message])
 ```
 
 ####Type validation
 ```js
-field("length").isNumeric([message])
+.isNumeric([message])
 
-field("age").isInt([message])
+.isInt([message])
 
-field("weight").isDecimal([message])
+.isDecimal([message])
 
-field("height").isFloat([message])
+.isFloat([message])
 ```
 
 ####Format validation
 ```js
-field("startDate").isDate([message])
+.isDate([message])
 
-field("email").isEmail([message])
+.isEmail([message])
 
-field("url").isUrl([message])
+.isUrl([message])
 
-field("host").isIP([message])
+.isIP([message])
 
-field("username").isAlpha([message])
+.isAlpha([message])
 
-field("username").isAlphanumeric([message])
+.isAlphanumeric([message])
 
-field("username").isLowercase([message])
+.isLowercase([message])
 
-field("username").isUppercase([message])
+.isUppercase([message])
 ```
 
 ####Content validation

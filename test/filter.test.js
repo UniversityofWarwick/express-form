@@ -8,7 +8,7 @@ module.exports = {
     form(filter("field").trim())(request, {});
     assert.equal(request.form.field, "value");
   },
-  
+
   'filter : ltrim': function() {
     var request = { body: { field: "\r\n  value   \t" }};
     form(filter("field").ltrim())(request, {});
@@ -42,6 +42,11 @@ module.exports = {
     form(filter("field").ifNull("value"))(request, {});
     assert.equal(request.form.field, "value");
 
+    // DO NOT Replace NaN with value
+    var request = { body: { field: NaN }};
+    form(filter("field").ifNull("value"))(request, {});
+    assert(isNaN(request.form.field));
+
     // DO NOT replace false
     var request = { body: { field: false }};
     form(filter("field").ifNull("value"))(request, {});
@@ -50,6 +55,43 @@ module.exports = {
     // DO NOT replace zero
     var request = { body: { field: 0 }};
     form(filter("field").ifNull("value"))(request, {});
+    assert.equal(request.form.field, 0);
+  },
+
+  'filter : ifNullOrNaN': function() {
+    // Replace missing value with "value"
+    var request = { body: {} };
+    form(filter("field").ifNullOrNaN("value"))(request, {});
+    assert.equal(request.form.field, "value");
+
+    // Replace empty string with value
+    var request = { body: { field: "" }};
+    form(filter("field").ifNullOrNaN("value"))(request, {});
+    assert.equal(request.form.field, "value");
+
+    // Replace NULL with value
+    var request = { body: { field: null }};
+    form(filter("field").ifNullOrNaN("value"))(request, {});
+    assert.equal(request.form.field, "value");
+
+    // Replace undefined with value
+    var request = { body: { field: undefined }};
+    form(filter("field").ifNullOrNaN("value"))(request, {});
+    assert.equal(request.form.field, "value");
+
+    // Replace NaN with value
+    var request = { body: { field: NaN }};
+    form(filter("field").ifNullOrNaN("value"))(request, {});
+    assert.equal(request.form.field, "value");
+
+    // DO NOT replace false
+    var request = { body: { field: false }};
+    form(filter("field").ifNullOrNaN("value"))(request, {});
+    assert.equal(request.form.field, false);
+
+    // DO NOT replace zero
+    var request = { body: { field: 0 }};
+    form(filter("field").ifNullOrNaN("value"))(request, {});
     assert.equal(request.form.field, 0);
   },
 
@@ -201,13 +243,13 @@ module.exports = {
     form(filter("field").toUpper())(request, {});
     assert.equal(request.form.field, "HELLÖ!");
   },
-  
+
   'filter : toUpper : object': function() {
     var request = { body: { email: { key: '1' }}};
     form(filter("email").toUpper())(request, {});
     assert.strictEqual(request.form.email, '[OBJECT OBJECT]');
   },
-  
+
   'filter : toUpper : array': function() {
     var request = { body: { email: ['MyEmaiL1@example.com', 'myemail2@example.org'] }};
     form(filter("email").toUpper())(request, {});
@@ -219,13 +261,13 @@ module.exports = {
     form(filter("field").toLower())(request, {});
     assert.equal(request.form.field, "hellö!");
   },
-  
+
   'filter : toLower : object': function() {
     var request = { body: { email: { key: '1' }}};
     form(filter("email").toLower())(request, {});
     assert.strictEqual(request.form.email, '[object object]');
   },
-  
+
   'filter : toLower : array': function() {
     var request = { body: { email: ['MyEmaiL1@example.com', 'myemail2@example.org'] }};
     form(filter("email").toLower())(request, {});
@@ -253,13 +295,13 @@ module.exports = {
     assert.equal(request.form.field4, "12...");
     assert.equal(request.form.field5, "1234...");
   },
-  
+
   'filter : truncate : object': function() {
     var request = { body: { email: { key: '1', length: 100 }}};
     form(filter("email").truncate(10))(request, {});
     assert.strictEqual(request.form.email, '[object...');
   },
-  
+
   'filter : truncate : array': function() {
     var request = { body: { email: ['myemail1@example.com', 'myemail2@example.org'] }};
     form(filter("email").truncate(11))(request, {});
