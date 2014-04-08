@@ -316,7 +316,7 @@ field("post.compulsoryCourses").array(1,30)
   // ...
 })
 ```
-The `custom()` method lets you create custom filters or validation by passing a function. It has one required argument, which is substituted with the field value on submission. You can optionally reference a second argument in your function, whose value is equivalent to `req.form`. This allows your code to look up values of other form fields, for example when you need to validate combinations of fields.
+The `custom()` method lets you create custom filters or validation by passing a function. It has one required argument, which is substituted with the field value on submission. You can optionally reference a second argument in your function, whose value is the contents of the `dataSources` defined in the [configuration](#configuration). This allows your code to look up values of other form fields, for example when you need to validate combinations of fields.
 
 
 * If the function throws an error, then an error is added to the form. (If `message` is not provided, the thrown error message is used.)
