@@ -3,7 +3,7 @@ var assert = require("assert")
   , field = form.field;
 
 module.exports = {
-  
+
   "field : arrays": function () {
     // Array transformations.
     var request = {
@@ -30,12 +30,33 @@ module.exports = {
     assert.strictEqual(request.form.field3[2], "Vicunas!");
     assert.strictEqual(request.form.field3[3], "Guanacos!!!");
     assert.strictEqual(request.form.field3.length, 4);
-    
-    // No array flag!
+
+    // Array length validation.
+    var request = { body: { field: ["Alpacas?", "Llamas!!?", "Vicunas!", "Guanacos!!!"] } };
+    form(field("field").array(5, 10))(request, {});
+    assert.equal(request.form.errors[0], "field has 4 elements. It should have at least 5");
+    var request = { body: { field: ["Alpacas?", "Llamas!!?", "Vicunas!", "Guanacos!!!"] } };
+    form(field("field").array(1, 3))(request, {});
+    assert.equal(request.form.errors[0], "field has 4 elements. It should have 3 or fewer");
+    var request = { body: { field: ["Alpacas?", "Llamas!!?", "Vicunas!", "Guanacos!!!"] } };
+    form(field("field").array(1, 3, "Incorrect number of camelids"))(request, {});
+    assert.equal(request.form.errors[0], "Incorrect number of camelids");
+    var request = { body: { field: ["Alpacas?", "Llamas!!?", "Vicunas!", "Guanacos!!!"] } };
+    form(field("field").array(1, 3, "Incorrect number of camelids in %s"))(request, {});
+    assert.equal(request.form.errors[0], "Incorrect number of camelids in field");
+    // Cope with broken arguments.
+    var request = { body: { field: ["Alpacas?", "Llamas!!?", "Vicunas!", "Guanacos!!!"] } };
+    form(field("field").array("fish", 3))(request, {});
+    assert.strictEqual(request.form.errors.length, 0);
+    var request = { body: { field: ["Alpacas?", "Llamas!!?", "Vicunas!", "Guanacos!!!"] } };
+    form(field("field").array(1))(request, {});
+    assert.strictEqual(request.form.errors.length, 0);
+
+      // No array flag!
     var request = { body: { field: ["red", "blue"] } };
     form(field("field"))(request, {});
     assert.strictEqual(request.form.field, "red");
-    
+
     // Iterate and filter array.
     var request = { body: { field: ["david", "stephen", "greg"] } };
     form(field("field").array().toUpper())(request, {});
@@ -43,14 +64,14 @@ module.exports = {
     assert.strictEqual(request.form.field[1], "STEPHEN");
     assert.strictEqual(request.form.field[2], "GREG");
     assert.strictEqual(request.form.field.length, 3);
-    
+
     // Iterate and validate array
     var request = { body: { field: [1, 2, "f"] } };
     form(field("field").array().isInt())(request, {});
     assert.equal(request.form.errors.length, 1);
     assert.equal(request.form.errors[0], "field is not an integer");
   },
-  "field : nesting": function () {  
+  "field : nesting": function () {
     // Nesting with dot notation
     var request = {
       body: {
@@ -68,7 +89,7 @@ module.exports = {
             }
           }
         }
-      
+
       }
     };
     form(
@@ -85,7 +106,7 @@ module.exports = {
     assert.strictEqual(request.form.field.gb.b, "AAAA");
     assert.strictEqual(request.form.field.gb.c.fruit, "DEEPER");
     assert.strictEqual(request.form.field.gb.c.must.go, "DEEPERRRR");
-    
+
     // Nesting with square-bracket notation
     var request = {
       body: {
@@ -103,7 +124,7 @@ module.exports = {
             }
           }
         }
-      
+
       }
     };
     form(
@@ -121,7 +142,7 @@ module.exports = {
     assert.strictEqual(request.form.field.gb.c.fruit, "DEEPER");
     assert.strictEqual(request.form.field.gb.c.must.go, "DEEPERRRR");
   },
-  
+
   "field : filter/validate combo ordering": function () {
     // Can arrange filter and validate procs in any order.
     var request = {
@@ -139,7 +160,7 @@ module.exports = {
     assert.equal(request.form.errors.length, 1);
     assert.equal(request.form.errors[0], "field1 is too long");
   },
-  
+
   "field : autoTrim": function () {
     // Auto-trim declared fields.
     form.configure({ autoTrim: true });
@@ -148,7 +169,7 @@ module.exports = {
     assert.strictEqual(request.form.field, "whatever");
     form.configure({ autoTrim: false });
   },
-  
+
   "field : passThrough": function () {
     // request.form gets all values from sources.
     form.configure({ passThrough: true });
@@ -161,7 +182,7 @@ module.exports = {
     form(field("field1"))(request, {});
     assert.strictEqual(request.form.field1, "fdsa");
     assert.strictEqual(request.form.field2, "asdf");
-    
+
     // request.form only gets declared fields.
     form.configure({ passThrough: false });
     var request = { body: {
@@ -172,7 +193,7 @@ module.exports = {
     assert.strictEqual(request.form.field1, "fdsa");
     assert.strictEqual(typeof request.form.field2, "undefined");
   },
-  
+
   "form : getErrors() gives full map": function() {
     var request = {
       body: {
