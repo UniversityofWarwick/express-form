@@ -122,7 +122,7 @@ field("username")
 
 .ifNull(replacement)     // -> "", undefined and null get replaced by `replacement`
 ```
-See also [Array coercion/validation](#arrays) section below.
+See also [Array coercion/validation](#array-coercionvalidation) section below.
 
 ####HTML encoding for `& " < >`
 ```js
