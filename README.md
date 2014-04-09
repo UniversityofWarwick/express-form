@@ -1,16 +1,20 @@
 # express-form
 
-Express Form provides data filtering and validation as route middleware to your Express applications.
+Express Form provides data filtering and validation as route middleware to your Express.js applications.
 
-[![Build Status](https://travis-ci.org/freewil/express-form.png?branch=master)](https://travis-ci.org/freewil/express-form)
+[![Build Status](https://travis-ci.org/UniversityofWarwick/express-form.svg?branch=master)](https://travis-ci.org/UniversityofWarwick/express-form)
+
+[//]:# ( At the time of latest updating, not all new features are backported to Express 2.x. Search this readme for 'Express 3.x' to see which are missing... )
 
 ## Install
 
-* **Express 2.x** `npm install express-form@0.9.x`
+* **Express 2.x** `npm install express-form@0.11.x`
 
-* **Express 3.x** `npm install express-form@0.10.x`
+* **Express 3.x** `npm install express-form@0.12.x`
 
 ## Usage
+
+### Inline (simple)
 
 ```js
 var express = require('express'),
@@ -52,6 +56,34 @@ app.post(
 );
 
 app.listen(3000);
+```
+
+### Separate functions
+
+```js
+var express = require('express'),
+    form = require('express-form'),
+    field = form.field;
+
+var app = express();
+
+app.configure(function() {
+  app.use(express.bodyDecoder());
+  app.use(app.router);
+});
+
+app.post('/user', route.validateUser, route.saveUser);
+
+exports.validateUser = form(
+  field("username").trim().required().is(/^[a-z]+$/),
+  field("password").trim().required().is(/^[0-9]+$/),
+  field("email").trim().isEmail()
+);
+
+exports.saveUser = // save or handle errors
+
+app.listen(3000);
+
 ```
 
 ## Documentation
@@ -110,7 +142,7 @@ field("username")
 
 ### Filter API
 
-####Type coercion
+#### Type coercion
 ```js
 .toFloat()                 // -> Number
 
@@ -122,23 +154,23 @@ field("username")
 
 .ifNull(replacement)       // -> "", undefined and null get replaced by `replacement`
 
-.ifNullOrNaN(replacement)  // -> "", undefined, null, NaN get replaced by `replacement`
+.ifNullOrNaN(replacement)  // -> "", undefined, null, NaN get replaced by `replacement` (Express 3.x only)
 ```
 
 If you intend to both validate and coerce numeric fields using `toInt()` or `toFloat()`, then you have two distinct approaches:
 * `.ifNull(0).toInt()` will ensure empty fields are zero, but non-numeric input will still return null, allowing you the option to validate with `.isInt()`.
-* `.toInt().ifNullOrNaN(0)` will ensure the field has a valid integral value whatever type is entered, defaulting to 0.
+* `.toInt().ifNullOrNaN(0)` (Express 3.x only) will ensure the field has a valid integral value whatever type is entered, defaulting to 0.
 
 For array coercion, see [Array coercion/validation](#array-coercionvalidation) below.
 
-####HTML encoding for `& " < >`
+#### HTML encoding for `& " < >`
 ```js
 .entityEncode()            // -> encodes HTML entities
 
 .entityDecode()            // -> decodes HTML entities
 ```
 
-####String transformations
+#### String transformations
 ```js
 .trim(chars)               // -> `chars` defaults to whitespace
 
@@ -155,7 +187,7 @@ For array coercion, see [Array coercion/validation](#array-coercionvalidation) b
 
 ### Validator API
 
-####Custom error messages
+#### Custom error messages
 
 Each validator has its own default validation message.
 These can easily be overridden at runtime by passing a custom validation message
@@ -176,14 +208,14 @@ field("uid", "Username").required("", "What is your %s?")
 // -> "What is your Username?"
 ```
 
-####Required field validation
+#### Required field validation
 
 Check that the field is present in form data, and has a value:
 ```js
 .required([message])
 ```
 
-####Type validation
+#### Type validation
 ```js
 .isNumeric([message])
 
@@ -194,7 +226,7 @@ Check that the field is present in form data, and has a value:
 .isFloat([message])
 ```
 
-####Format validation
+#### Format validation
 ```js
 .isDate([message])
 
@@ -213,7 +245,7 @@ Check that the field is present in form data, and has a value:
 .isUppercase([message])
 ```
 
-####Content validation
+#### Content validation
 ```js
 .notEmpty([message])
 
@@ -244,7 +276,7 @@ Check that the field is present in form data, and has a value:
     Checks if the field does NOT contain `value`.
 ```
 
-####Regular expression validation
+#### Regular expression validation
 ```js
 .regex(pattern[, modifiers[, message]])
 - pattern (RegExp|String): RegExp (with flags) or String pattern.
@@ -302,7 +334,7 @@ field("post.users").array().toUpper()
 // post.users: ["one", "two", "three"] => ["ONE", "TWO", "THREE"]
 ```
 
-You can optionally pass a pair of numeric arguments to array() to specify a minimum and maximum valid array length, and a further optional argument for a custom message to display if the length is out of range:
+(Express 3.x only) You can optionally pass a pair of numeric arguments to array() to specify a minimum and maximum valid array length, and a further optional argument for a custom message to display if the length is out of range:
 
 ```js
 field("post.compulsoryCourses").array(1,30)
