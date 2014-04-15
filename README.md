@@ -192,27 +192,29 @@ For array coercion, see [Array coercion/validation](#array-coercionvalidation) b
 Each validator has its own default validation message.
 These can easily be overridden at runtime by passing a custom validation message
 to the validator. The custom message is always the **last** argument passed to
-the validator. `required()` allows you to set a placeholder (or default value)
-that your form contains when originally presented to the user. This prevents the
-placeholder value from passing the `required()` check.
+the validator.
 
-Use "%s" in the message to have the field name or label printed in the message:
+If you include `%s` in the custom message argument, it will be replaced by the field name or label when printed:
 ```js
-.required()
-// -> "username is required"
+field('Username').required()
+// -> "Username is required"
 
-.required("Type your desired username", "What is your %s?")
-// -> "What is your username?"
+field('Username').required("I don't know who you are.")
+// -> "I don't know who you are."
 
-field("uid", "Username").required("", "What is your %s?")
+field('Username').required("What is your %s?")
 // -> "What is your Username?"
 ```
 
 #### Required field validation
 
-Check that the field is present in form data, and has a value:
+Check that the field is present in form data, and has a value. There are two optional arguments. If a single argument
+is passed, this is used as the validation message. If two arguments are passed, the second is the validation message,
+while the first is a placeholder value. This should be used if a default value is provided to the user in the form
+field, which you want to fail validation.
+
 ```js
-.required([message])
+.required([[placeholder,] message])
 ```
 
 #### Type validation
@@ -264,13 +266,13 @@ Check that the field is present in form data, and has a value:
     field("password_confirmation").equals("field::password")
 
 
-.contains(value[, message])
+.contains(value [, message])
 - value (String): The value to test for.
 
     Checks if the field contains `value`.
 
 
-.notContains(string[, message])
+.notContains(string [, message])
 - value (String): A value that should not exist in the field.
 
     Checks if the field does NOT contain `value`.
@@ -278,7 +280,7 @@ Check that the field is present in form data, and has a value:
 
 #### Regular expression validation
 ```js
-.regex(pattern[, modifiers[, message]])
+.regex(pattern [, modifiers[, message]])
 - pattern (RegExp|String): RegExp (with flags) or String pattern.
 - modifiers (String): Optional, and only if `pattern` is a String.
 - message (String): Optional validation message.
@@ -293,7 +295,7 @@ Check that the field is present in form data, and has a value:
     field("username").is(/[a-z]/i, "Only letters are valid in %s")
 
 
-.notRegex(pattern[, modifiers[, message]])
+.notRegex(pattern [, modifiers[, message]])
 - pattern (RegExp|String): RegExp (with flags) or String pattern.
 - modifiers (String): Optional, and only if `pattern` is a String.
 - message (String): Optional validation message.
@@ -311,7 +313,7 @@ Check that the field is present in form data, and has a value:
 ### Array coercion/validation
 
 ```js
-.array([min, max [, message])
+.array([min, max [, message]])
 ```
 
 Using the `array()` method means that field *always* returns an array. If the field value is an array, but you don't use this method, then the first value in that array is used instead for any validation/filtering.
@@ -344,7 +346,7 @@ field("post.compulsoryCourses").array(1,30)
 ### Custom Methods
 
 ```js
-.custom(function(value[, source]) {
+.custom(function(value [, source]) {
   // ...
 })
 ```

@@ -1,5 +1,8 @@
 # express-form changelog
 
+## v0.12.1 (2014/04/15)
+* add validateCustomIfEmpty() method, array length checking
+
 ## v0.12.0 (2014/03/03)
 * simplify isEmail() regex (only checks for @); fixes ReDos vuln.
 

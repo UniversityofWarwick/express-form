@@ -508,6 +508,12 @@ module.exports = {
     assert.equal(request.form.errors.length, 1);
     assert.equal(request.form.errors[0], "field is required");
 
+    // Failure w/ custom message.
+    var request = { body: {}};
+    form(validate("field").required("!!! %s !!!"))(request, {});
+    assert.equal(request.form.errors.length, 1);
+    assert.equal(request.form.errors[0], "!!! field !!!");
+
     // Failure w/ placeholder value and custom message.
     var request = { body: { field: "value" }};
     form(validate("field").required("value", "!!! %s !!!"))(request, {});
