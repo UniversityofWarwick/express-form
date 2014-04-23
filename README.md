@@ -336,6 +336,13 @@ field("post.users").array().toUpper()
 // post.users: ["one", "two", "three"] => ["ONE", "TWO", "THREE"]
 ```
 
+This only works with one-dimensional arrays. (Express 3.x only) If you try to chain any filter/validation methods on a 2D array, express-form will throw an error. In this scenario, either re-cast your form to return a 1D array, or do your further filtering outside of express-form:
+
+```js
+field("post.answers").array().trim()
+// post.answers: [["one", "two"], [" foo ", " bar "]] => Error
+```
+
 (Express 3.x only) You can optionally pass a pair of numeric arguments to array() to specify a minimum and maximum valid array length, and a further optional argument for a custom message to display if the length is out of range:
 
 ```js

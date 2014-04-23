@@ -65,14 +65,28 @@ module.exports = {
     assert.strictEqual(request.form.field[2], "GREG");
     assert.strictEqual(request.form.field.length, 3);
 
-    // Iterate and validate array
+    // Iterate and trim array.
+    var request = { body: { field:["david", "   stephen   ", "greg"] } };
+    form(field("field").array().trim())(request, {});
+    assert.strictEqual(request.form.field[0], "david");
+    assert.strictEqual(request.form.field[1], "stephen");
+    assert.strictEqual(request.form.field[2], "greg");
+    assert.strictEqual(request.form.field.length, 3);
+
+    // Iterate nested array throws.
+    var request = { body: { field:[["david", "   stephen   ", "greg"]] } };
+    form(field("field").array().trim())(request, {});
+    assert.equal(request.form.errors.length, 1);
+    assert.equal(request.form.errors[0], "express-form cannot process nested arrays of form parameters");
+
+    // Iterate and validate array.
     var request = { body: { field: [1, 2, "f"] } };
     form(field("field").array().isInt())(request, {});
     assert.equal(request.form.errors.length, 1);
     assert.equal(request.form.errors[0], "field is not an integer");
   },
   "field : nesting": function () {
-    // Nesting with dot notation
+    // Nesting with dot notation.
     var request = {
       body: {
         field: {
