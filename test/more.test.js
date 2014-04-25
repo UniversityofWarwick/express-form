@@ -79,6 +79,13 @@ module.exports = {
     assert.equal(request.form.errors.length, 1);
     assert.equal(request.form.errors[0], "express-form cannot process nested arrays of form parameters");
 
+    // Iterate nested array throws unless option overrides.
+    var request = { body: { field:[["david", "   stephen   ", "greg"]] } };
+    form.configure({ throwNestedArrayError: false });
+    form(field("field").array().trim())(request, {});
+    form.configure({ throwNestedArrayError: true });
+    assert.equal(request.form.errors.length, 0);
+
     // Iterate and validate array.
     var request = { body: { field: [1, 2, "f"] } };
     form(field("field").array().isInt())(request, {});

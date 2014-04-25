@@ -461,9 +461,12 @@ options (Object) {
   autoTrim,
   // (Boolean) If true, all fields will be automatically trimmed.
   // Default: false
-  passThrough
+  passThrough,
   // (Boolean) If true, all data sources will be merged with `req.form`.
   // Default: false
+  throwNestedArrayError
+  // (Boolean) If true, an error will be thrown when trying to chain validator methods on nested arrays.
+  // Default: true
 }
 ```
 ### Credits
